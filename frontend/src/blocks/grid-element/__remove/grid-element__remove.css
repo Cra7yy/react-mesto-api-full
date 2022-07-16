@@ -1,0 +1,18 @@
+.grid-element__remove {
+  position: absolute;
+  background-image: url(../../../images/remove.svg);
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  width: 18px;
+  height: 19px;
+  top: 20px;
+  left: 244px;
+  cursor: pointer;
+  display:none;
+}
+
+.grid-element__remove:hover {
+  transition-duration: 0.3s;
+  opacity: 0.5;
+}

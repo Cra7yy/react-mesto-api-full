@@ -1,0 +1,15 @@
+.grid-element {
+  max-width: 282px;
+  height: 361px;
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (max-width: 975px) {
+  .grid-element {
+    justify-self: center;
+  }
+}

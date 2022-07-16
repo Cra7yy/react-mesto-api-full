@@ -1,0 +1,21 @@
+.grid-conteiner {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(min-content, 1fr) minmax(min-content, 1fr) minmax(min-content, 1fr);
+  grid-template-rows: minmax(min-content, max-content) 1fr;
+  column-gap: 17px;
+  row-gap: 20px;
+}
+
+@media screen and (max-width: 975px) {
+  .grid-conteiner {
+    margin: 0 auto;
+    grid-template-columns: minmax(min-content, 1fr) minmax(min-content, 1fr);
+  }
+}
+
+@media screen and (max-width: 645px) {
+  .grid-conteiner {
+    grid-template-columns: minmax(min-content, 1fr);
+  }
+}

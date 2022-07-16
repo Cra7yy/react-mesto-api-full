@@ -1,0 +1,17 @@
+.profile__img-shadow {
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  transition: background-color 350ms;
+}
+
+.profile__img-shadow:hover {
+  background-image: url('../../../images/pensol.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+}

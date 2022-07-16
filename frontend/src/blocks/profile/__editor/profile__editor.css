@@ -1,0 +1,25 @@
+.profile__editor {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #FFFFFF;
+  margin-left: 18px;
+  background: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.profile__editor:hover {
+  opacity: 0.6;
+  transition-duration: 0.3s;
+}
+
+@media screen and (max-width: 645px) {
+  .profile__editor {
+    width: 18px;
+    height: 18px;
+    margin-left: 10px;
+    margin-top: 22px;
+  }
+}
