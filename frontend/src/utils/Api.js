@@ -100,7 +100,7 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: 'http://api.mesto.cra7y.nomoredomains.xyz'
+  baseUrl: 'http://localhost:3000/'
 })
 
 export default api
