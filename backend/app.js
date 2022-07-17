@@ -17,12 +17,7 @@ const app = express();
 const port = 3000;
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-  useUnifiedTopology: true,
-});
+mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
