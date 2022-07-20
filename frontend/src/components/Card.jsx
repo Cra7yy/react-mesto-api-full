@@ -11,7 +11,7 @@ const Card = ({
 
   console.log(card)
   const context = useContext(CurrentUserContext)
-  const isOwn = card.owner._id === context._id
+  const isOwn = card.owner === context._id
   const isLiked = card.likes.some(i => i._id === context._id)
 
   const cardDeleteButtonClassName = (
