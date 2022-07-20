@@ -1,7 +1,6 @@
-export const BASE_URL = 'http://localhost:3000'
+export const BASE_URL = "http://localhost:3000"
 
 const checkResponse = (res) => {
-  console.log(res.ok)
   if (res.ok) {
     return res.json();
   }
@@ -12,7 +11,6 @@ const checkResponse = (res) => {
 }
 
 export const register = (email, password) => {
-  console.log(email, password)
   return fetch(`${BASE_URL}/signup`, {
       method: 'POST',
       headers: {
@@ -28,7 +26,6 @@ export const register = (email, password) => {
 }
 
 export const authorize = (email, password) => {
-  console.log(email, password)
   return fetch(`${BASE_URL}/signin`, {
       method: 'POST',
       headers: {
@@ -44,14 +41,11 @@ export const authorize = (email, password) => {
 }
 
 export const getContent = (token) => {
-  console.log(token)
   return fetch(`${BASE_URL}/users/me`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      }
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `${token}`,
+    },
     })
     .then(checkResponse)
 }
