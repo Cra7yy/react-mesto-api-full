@@ -12,12 +12,6 @@ const ErrCardId = () => {
   throw error;
 };
 
-const NotDeleteCardId = () => {
-  const error = new Error('Чужую карточку удалить нельзя');
-  error.statusCode = 403;
-  throw error;
-};
-
 const getCards = (req, res) => {
   Card.find({}).then((cards) => res.status(200).send(cards));
 };
@@ -34,11 +28,9 @@ const postCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  Card.findOneAndDelete({ _id: req.params.cardId }).then((card) => {
+  Card.findOneAndDelete({ owner: req.user._id, _id: req.params.cardId }).then((card) => {
     if (!card) {
       throw new ErrCardId();
-    } else if (card.owner !== req.user.cardId.toSting()) {
-      throw new NotDeleteCardId();
     } else {
       res.status(200).send(card);
     }

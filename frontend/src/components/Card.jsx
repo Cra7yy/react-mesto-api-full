@@ -1,5 +1,4 @@
 import { useContext } from 'react'
-
 import CurrentUserContext from "../contexts/CurrentUserContext"
 
 const Card = ({
@@ -9,10 +8,9 @@ const Card = ({
   onCardDelete
 }) => {
 
-  console.log(card)
   const context = useContext(CurrentUserContext)
   const isOwn = card.owner === context._id
-  const isLiked = card.likes.some(i => i._id === context._id)
+  const isLiked = card.likes.some(i => i === context._id)
 
   const cardDeleteButtonClassName = (
     `grid-element__remove ${isOwn ? 'grid-element__remove-visible' : ''}`

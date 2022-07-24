@@ -64,10 +64,11 @@ function App() {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem('jwt')
-    if (token, loggedIn) {
+    const token = localStorage.getItem('token')
+    if (token) {
       api.getProfile(token)
         .then((res) => {
+          console.log('function 8 dowload useEffect components App', res)
           setCurrentUser(res)
         })
         .catch(err => console.log(err))
@@ -75,7 +76,7 @@ function App() {
   }, [loggedIn]);
 
   const handleUpdateUser = ({name, about}) => {
-    const token = localStorage.getItem("jwt");
+    const token = localStorage.getItem('token');
     api.editProfile(name, about, token)
       .then((res) => {
         setCurrentUser(res)
@@ -85,7 +86,7 @@ function App() {
   }
 
   const handleUpdateAvatar = ({ avatar }) => {
-    const token = localStorage.getItem('jwt')
+    const token = localStorage.getItem('token')
     api.updateAvatar(avatar, token)
       .then((res) => {
         setCurrentUser(res)
@@ -95,8 +96,8 @@ function App() {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem('jwt')
-    if (token, loggedIn) {
+    const token = localStorage.getItem('token')
+    if (token) {
       api.getInitialCards(token)
         .then((res) => {
           setCards(res)
@@ -106,8 +107,9 @@ function App() {
   }, [loggedIn])
 
   const handleCardLike = (card) => {
+    console.log(card)
     const isLiked = card.likes.some(i => i._id === currentUser._id)
-    const token = localStorage.getItem('jwt')
+    const token = localStorage.getItem('token')
 
     api.changeLikeCardStatus(card._id, !isLiked, token)
       .then((newCard) => {
@@ -119,17 +121,16 @@ function App() {
   }
 
   const handleCardDelete = (card) => {
-    const token = localStorage.getItem('jwt')
+    const token = localStorage.getItem('token')
     api.deleteCard(card._id, token)
       .then(res => {
-        console.log(res)
         setCards((state) => state.filter((item) => item._id !== card._id && item));
       })
       .catch(err => console.log(err))
   }
 
   const handleAddPlaceSubmit = ({ name, link }) => {
-    const token = localStorage.getItem('jwt')
+    const token = localStorage.getItem('token')
     api.addCard(name, link, token)
       .then((newCard) => {
         setCards([
@@ -156,9 +157,11 @@ function App() {
       .catch(err => console.log(err))
   }
 
-  const handleLogin = ({email, password}) => {
+  const handleLogin = ({ email, password }) => {
+    console.log('function 1 components App handleLogin', email, password)
     return auth.authorize(email, password)
       .then((data) => {
+        console.log('function 4 приходяшие данные из бека component App', data)
         if (data.token) {
           localStorage.setItem('token', data.token);
           tokenCheck();
@@ -168,13 +171,15 @@ function App() {
   }
 
   const tokenCheck = () => {
-    if (localStorage.getItem('token')) {
-      const token = localStorage.getItem('token');
+    console.log('function 5 tokenCheck component App')
+    const token = localStorage.getItem('token');
+    if (token) {
       auth.getContent(token)
         .then((res) => {
+          console.log('function 7 tokenCheck component App dowload user data' , res)
           if (res) {
             let email = {
-              email: res.data.email
+              email: res.email
             }
             setLoggedIn(true);
             setEmail(email);
@@ -195,9 +200,10 @@ function App() {
   }, [loggedIn]);
 
   const signOut = () => {
-    localStorage.removeItem('token');
+    setCurrentUser({name: '', about: '', link: ''})
     setLoggedIn(false);
     setEmail('');
+    localStorage.removeItem('token');
     history.push('/signin');
   }
 

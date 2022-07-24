@@ -19,10 +19,10 @@ const isAuthorized = (req, res, next) => {
 
     User.findOne({ id: payload._id })
       .then((user) => {
-        if (user) {
+        if (!user) {
           throwUnauthorizedError();
         }
-        req.user._id = user._id;
+        req.user = user._id;
         next();
       });
   } catch (err) {

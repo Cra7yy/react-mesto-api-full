@@ -32,9 +32,8 @@ const getUserId = (req, res) => {
     .then((user) => {
       if (!user) {
         throw new ErrUserId();
-      } else {
-        res.status(200).send(user);
       }
+      res.status(200).send(user);
     }).catch((err) => {
       if (err.name === 'CastError') {
         throw new InvalidData();
@@ -62,7 +61,7 @@ const postUser = (req, res) => {
       email,
       password: hash,
     }))
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(201).send({data: user}))
     .catch((err) => {
       if (err.name === 'ValidationError') throw new InvalidData();
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) res.status(409).send({ message: 'email занят' });
@@ -123,7 +122,7 @@ const getUser = (req, res) => {
       if (!user) {
         throw new ErrUserId();
       }
-      return res.status(200).send({ data: user });
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {

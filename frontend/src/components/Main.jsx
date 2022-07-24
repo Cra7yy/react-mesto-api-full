@@ -14,7 +14,6 @@ const Main = ({
   onCardLike,
   onCardDelete
 }) => {
-
   const context = useContext(CurrentUserContext)
 
   return (
