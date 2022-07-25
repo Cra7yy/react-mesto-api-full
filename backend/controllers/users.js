@@ -61,7 +61,7 @@ const postUser = (req, res) => {
       email,
       password: hash,
     }))
-    .then((user) => res.status(201).send({data: user}))
+    .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') throw new InvalidData();
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) res.status(409).send({ message: 'email занят' });
