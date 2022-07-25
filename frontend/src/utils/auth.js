@@ -1,7 +1,6 @@
 export const BASE_URL = "http://localhost:3000"
 
 const checkResponse = (res) => {
-  console.log('function 3 приходяшие данные из бека component auth', res)
   if (res.ok) {
     return res.json();
   }
@@ -27,7 +26,6 @@ export const register = (email, password) => {
 }
 
 export const authorize = (email, password) => {
-  console.log('function 2 component auth', email, password)
   return fetch(`${BASE_URL}/signin`, {
       method: 'POST',
       headers: {
@@ -43,7 +41,6 @@ export const authorize = (email, password) => {
 }
 
 export const getContent = (token) => {
-  console.log('function 6 getContent component auth upload user data')
   return fetch(`${BASE_URL}/users/me`, {
     method: 'GET',
     headers: {

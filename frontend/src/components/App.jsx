@@ -68,7 +68,6 @@ function App() {
     if (token) {
       api.getProfile(token)
         .then((res) => {
-          console.log('function 8 dowload useEffect components App', res)
           setCurrentUser(res)
         })
         .catch(err => console.log(err))
@@ -100,6 +99,7 @@ function App() {
     if (token) {
       api.getInitialCards(token)
         .then((res) => {
+          res.reverse()
           setCards(res)
         })
         .catch(err => console.log(err))
@@ -107,10 +107,8 @@ function App() {
   }, [loggedIn])
 
   const handleCardLike = (card) => {
-    console.log(card)
-    const isLiked = card.likes.some(i => i._id === currentUser._id)
+    const isLiked = card.likes.some(i => i === currentUser._id)
     const token = localStorage.getItem('token')
-
     api.changeLikeCardStatus(card._id, !isLiked, token)
       .then((newCard) => {
         setCards((state) => state.map((c) => c._id === card._id
@@ -158,10 +156,8 @@ function App() {
   }
 
   const handleLogin = ({ email, password }) => {
-    console.log('function 1 components App handleLogin', email, password)
     return auth.authorize(email, password)
       .then((data) => {
-        console.log('function 4 приходяшие данные из бека component App', data)
         if (data.token) {
           localStorage.setItem('token', data.token);
           tokenCheck();
@@ -171,12 +167,10 @@ function App() {
   }
 
   const tokenCheck = () => {
-    console.log('function 5 tokenCheck component App')
     const token = localStorage.getItem('token');
     if (token) {
       auth.getContent(token)
         .then((res) => {
-          console.log('function 7 tokenCheck component App dowload user data' , res)
           if (res) {
             let email = {
               email: res.email
