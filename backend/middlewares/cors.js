@@ -4,11 +4,14 @@ const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
 const allowedCors = [
   'http://mesto.cra7y.nomoredomains.xyz/',
   'https://mesto.cra7y.nomoredomains.xyz/',
+  'http://mesto.cra7y.nomoredomains.xyz',
+  'https://mesto.cra7y.nomoredomains.xyz',
+  'https://api.mesto.cra7y.nomoredomains.xyz',
+  'http://api.mesto.cra7y.nomoredomains.xyz',
   'https://api.mesto.cra7y.nomoredomains.xyz/',
   'http://api.mesto.cra7y.nomoredomains.xyz/',
   'http://localhost:3000',
   'http://localhost:3001',
-];
 
 module.exports = ((req, res, next) => {
   const { origin } = req.headers;
