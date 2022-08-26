@@ -2,11 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
+const validator = require('validator');
+const { celebrate, Joi } = require('celebrate');
 const cors = require('./middlewares/cors');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const NotFoundError = require('./middlewares/notFoundError');
 const {
   login,
   postUser,
@@ -28,13 +30,35 @@ app.get('/crash-test', () => {
   }, 0);
 });
 app.use(cors);
-app.post('/signin', login);
-app.post('/signup', postUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+}), login);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().custom((value, helper) => {
+      if (validator.isURL(value, { require_protocol: true })) {
+        return value;
+      }
+      return helper.message('Невалидная ссылка');
+    }),
+  }),
+}), postUser);
 
 app.use('/users', isAuthorized, userRouter);
 app.use('/cards', isAuthorized, cardRouter);
+app.use((req, res, next) => {
+  next(new NotFoundError('Маршрут не найден'));
+});
 app.use(errorLogger);
 
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   if (err.statusCode) {
     return res.status(err.statusCode).send({ message: err.message });

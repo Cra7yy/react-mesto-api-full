@@ -23,11 +23,18 @@ const NotForwardedRegistrationData = () => {
   throw error;
 };
 
-const getUsers = (req, res) => {
-  User.find({}).then((users) => res.status(200).send(users));
+const EmailBusy = () => {
+  const error = new Error('email занят');
+  error.statusCode = 409;
+  throw error;
 };
 
-const getUserId = (req, res) => {
+const getUsers = (req, res, next) => {
+  User.find({}).then((users) => res.status(200).send(users))
+    .catch(next);
+};
+
+const getUserId = (req, res, next) => {
   User.findOne({ _id: req.params.userId })
     .then((user) => {
       if (!user) {
@@ -37,11 +44,13 @@ const getUserId = (req, res) => {
     }).catch((err) => {
       if (err.name === 'CastError') {
         throw new InvalidData();
+      } else {
+        next(err);
       }
     });
 };
 
-const postUser = (req, res) => {
+const postUser = (req, res, next) => {
   const {
     name,
     about,
@@ -49,9 +58,6 @@ const postUser = (req, res) => {
     email,
     password,
   } = req.body;
-  if (!email || !password) {
-    InvalidData();
-  }
   bcrypt
     .hash(password, SALT_ROUNDS)
     .then((hash) => User.create({
@@ -61,14 +67,22 @@ const postUser = (req, res) => {
       email,
       password: hash,
     }))
-    .then((user) => res.status(201).send({ data: user }))
+    .then((user) => res.status(201).send({ data: user.email }))
     .catch((err) => {
-      if (err.name === 'ValidationError') throw new InvalidData();
-      if (err.code === MONGO_DUPLICATE_ERROR_CODE) res.status(409).send({ message: 'email занят' });
+      if (err.name === 'ValidationError') {
+        next(new InvalidData());
+      } else {
+        next(err);
+      }
+      if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
+        throw new EmailBusy();
+      } else {
+        next(err);
+      }
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -80,10 +94,13 @@ const login = (req, res) => {
     })
     .then((token) => {
       res.send({ token });
+    })
+    .catch((err) => {
+      next(err);
     });
 };
 
-const changeUserData = (req, res) => {
+const changeUserData = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
@@ -95,11 +112,13 @@ const changeUserData = (req, res) => {
     }).catch((err) => {
       if (err.name === 'ValidationError') {
         throw new InvalidData();
+      } else {
+        next(err);
       }
     });
 };
 
-const changeAvatar = (req, res) => {
+const changeAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
@@ -111,11 +130,13 @@ const changeAvatar = (req, res) => {
     }).catch((err) => {
       if (err.name === 'ValidationError') {
         throw new InvalidData();
+      } else {
+        next(err);
       }
     });
 };
 
-const getUser = (req, res) => {
+const getUser = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)
     .then((user) => {
@@ -127,6 +148,8 @@ const getUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new InvalidData();
+      } else {
+        next(err);
       }
     });
 };

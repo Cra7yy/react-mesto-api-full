@@ -12,7 +12,7 @@ const allowedCors = [
   'http://api.mesto.cra7y.nomoredomains.xyz/',
   'http://localhost:3000',
   'http://localhost:3001',
-]
+];
 
 module.exports = ((req, res, next) => {
   const { origin } = req.headers;

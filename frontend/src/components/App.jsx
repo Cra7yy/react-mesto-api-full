@@ -143,7 +143,7 @@ function App() {
     setTimeout(() => {
       closeAllPopups()
       history.push('/signin')
-    }, 3000)
+    }, 1500)
   }
 
   const handleRegister = ({email, password}) => {
