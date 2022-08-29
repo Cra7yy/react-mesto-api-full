@@ -1,16 +1,11 @@
 const { checkToken } = require('../helpers/jwt');
 const User = require('../models/user');
-
-const throwUnauthorizedError = () => {
-  const error = new Error('Авторизуруйтесь для доступа');
-  error.statusCode = 401;
-  throw error;
-};
+const AuthorizationError = require('../errors/authorizationError');
 
 const isAuthorized = (req, res, next) => {
   const auth = req.headers.authorization;
   if (!auth) {
-    throwUnauthorizedError();
+    next(new AuthorizationError('Авторизуруйтесь для доступа'));
   }
 
   const token = auth.replace('Bearer ', '');
@@ -20,13 +15,13 @@ const isAuthorized = (req, res, next) => {
     User.findOne({ email: payload.email })
       .then((user) => {
         if (!user) {
-          throwUnauthorizedError();
+          next(new AuthorizationError('Авторизуруйтесь для доступа'));
         }
         req.user = user._id;
         next();
       });
   } catch (err) {
-    throwUnauthorizedError();
+    next(new AuthorizationError('Авторизуруйтесь для доступа'));
   }
 };
 

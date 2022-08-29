@@ -1,33 +1,13 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const { generateToken } = require('../helpers/jwt');
+const BadRequestError = require('../errors/badRequestError');
+const NotFoundError = require('../errors/notFoundError');
+const ConflictingRequestError = require('../errors/conflictingRequestError');
+const ForbiddenError = require('../errors/forbiddenError');
 
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
 const SALT_ROUNDS = 10;
-
-const InvalidData = () => {
-  const error = new Error('переданы некоректные данные');
-  error.statusCode = 400;
-  throw error;
-};
-
-const ErrUserId = () => {
-  const error = new Error('Пользователь по указанному _id не найден');
-  error.statusCode = 404;
-  throw error;
-};
-
-const NotForwardedRegistrationData = () => {
-  const error = new Error('неправильный email или password');
-  error.statusCode = 403;
-  throw error;
-};
-
-const EmailBusy = () => {
-  const error = new Error('email занят');
-  error.statusCode = 409;
-  throw error;
-};
 
 const getUsers = (req, res, next) => {
   User.find({}).then((users) => res.status(200).send(users))
@@ -38,12 +18,12 @@ const getUserId = (req, res, next) => {
   User.findOne({ _id: req.params.userId })
     .then((user) => {
       if (!user) {
-        throw new ErrUserId();
+        next(new NotFoundError('Пользователь по указанному _id не найден'));
       }
       res.status(200).send(user);
     }).catch((err) => {
       if (err.name === 'CastError') {
-        throw new InvalidData();
+        next(new BadRequestError('переданы некоректные данные'));
       } else {
         next(err);
       }
@@ -70,12 +50,12 @@ const postUser = (req, res, next) => {
     .then((user) => res.status(201).send({ data: user.email }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new InvalidData());
+        next(new BadRequestError('переданы некоректные данные'));
       } else {
         next(err);
       }
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
-        throw new EmailBusy();
+        next(new ConflictingRequestError('email занят'));
       } else {
         next(err);
       }
@@ -88,7 +68,7 @@ const login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       if (!user) {
-        throw new NotForwardedRegistrationData();
+        next(new ForbiddenError('неправильный email или password'));
       }
       return generateToken({ email: user.email });
     })
@@ -105,13 +85,13 @@ const changeUserData = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw new ErrUserId();
+        next(new NotFoundError('Пользователь по указанному _id не найден'));
       } else {
         res.status(200).send(user);
       }
     }).catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new InvalidData();
+        next(new BadRequestError('переданы некоректные данные'));
       } else {
         next(err);
       }
@@ -123,13 +103,13 @@ const changeAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw new ErrUserId();
+        next(new NotFoundError('Пользователь по указанному _id не найден'));
       } else {
         res.status(200).send(user);
       }
     }).catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new InvalidData();
+        next(new BadRequestError('переданы некоректные данные'));
       } else {
         next(err);
       }
@@ -141,13 +121,13 @@ const getUser = (req, res, next) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        throw new ErrUserId();
+        next(new NotFoundError('Пользователь по указанному _id не найден'));
       }
       return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new InvalidData();
+        next(new BadRequestError('переданы некоректные данные'));
       } else {
         next(err);
       }

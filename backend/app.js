@@ -8,7 +8,7 @@ const cors = require('./middlewares/cors');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const NotFoundError = require('./middlewares/notFoundError');
+const NotFoundError = require('./errors/notFoundError');
 const {
   login,
   postUser,

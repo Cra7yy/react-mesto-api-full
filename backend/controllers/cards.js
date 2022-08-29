@@ -1,22 +1,7 @@
 const Card = require('../models/card');
-
-const InvalidData = () => {
-  const error = new Error('Переданы некоректные данные');
-  error.statusCode = 400;
-  throw error;
-};
-
-const ErrCardId = () => {
-  const error = new Error('Карточка с указанным _id не найдена');
-  error.statusCode = 404;
-  throw error;
-};
-
-const ForeignCard = () => {
-  const error = new Error('Попытка удалить чужую карточку');
-  error.statusCode = 403;
-  throw error;
-};
+const BadRequestError = require('../errors/badRequestError');
+const NotFoundError = require('../errors/notFoundError');
+const ForbiddenError = require('../errors/forbiddenError');
 
 const getCards = (req, res, next) => {
   Card.find({}).then((cards) => res.status(200).send(cards))
@@ -29,7 +14,7 @@ const postCard = (req, res, next) => {
   Card.create({ owner, name, link }).then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new InvalidData();
+        next(new BadRequestError('Переданы некоректные данные'));
       } else {
         next(err);
       }
@@ -39,11 +24,11 @@ const postCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .orFail(() => {
-      ErrCardId();
+      next(new NotFoundError('Карточка с указанным _id не найдена'));
     })
     .then((card) => {
       if (!card.owner.equals(req.user._id)) {
-        next(new ForeignCard());
+        next(new ForbiddenError('Попытка удалить чужую карточку'));
       } else {
         Card.deleteOne(card)
           .then(() => res.status(200).send(card));
@@ -59,13 +44,13 @@ const addCardLike = (req, res, next) => {
     { new: true },
   ).then((card) => {
     if (!card) {
-      throw new ErrCardId();
+      next(new NotFoundError('Карточка с указанным _id не найдена'));
     } else {
       res.status(200).send(card);
     }
   }).catch((err) => {
     if (err.name === 'CastError') {
-      throw new InvalidData();
+      next(new BadRequestError('Переданы некоректные данные'));
     } else {
       next(err);
     }
@@ -79,13 +64,13 @@ const deleteCardLike = (req, res, next) => {
     { new: true },
   ).then((card) => {
     if (!card) {
-      throw new ErrCardId();
+      next(new NotFoundError('Карточка с указанным _id не найдена'));
     } else {
       res.status(200).send(card);
     }
   }).catch((err) => {
     if (err.name === 'CastError') {
-      throw new InvalidData();
+      next(new BadRequestError('Переданы некоректные данные'));
     } else {
       next(err);
     }
