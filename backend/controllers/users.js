@@ -4,7 +4,7 @@ const { generateToken } = require('../helpers/jwt');
 const BadRequestError = require('../errors/badRequestError');
 const NotFoundError = require('../errors/notFoundError');
 const ConflictingRequestError = require('../errors/conflictingRequestError');
-const ForbiddenError = require('../errors/forbiddenError');
+const AuthorizationError = require('../errors/authorizationError');
 
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
 const SALT_ROUNDS = 10;
@@ -51,8 +51,6 @@ const postUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('переданы некоректные данные'));
-      } else {
-        next(err);
       }
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
         next(new ConflictingRequestError('email занят'));
@@ -68,7 +66,7 @@ const login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       if (!user) {
-        next(new ForbiddenError('неправильный email или password'));
+        next(new AuthorizationError('неправильный email или password'));
       }
       return generateToken({ email: user.email });
     })

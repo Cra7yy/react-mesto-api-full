@@ -1,4 +1,5 @@
-export const BASE_URL = "https://api.mesto.cra7y.nomoredomains.xyz"
+// export const BASE_URL = "https://api.mesto.cra7y.nomoredomains.xyz"
+export const BASE_URL = "http://localhost:3000"
 
 const checkResponse = (res) => {
   if (res.ok) {
