@@ -3,4 +3,4 @@
   
 * [Ссылка на проект](https://mesto.cra7y.nomoredomains.xyz/)
 * публичный ip адрес 51.250.70.159
-* nickname cra7y
+
